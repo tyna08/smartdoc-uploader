@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SmartDoc Upload | Lanada SmartTech</title>
+
+  <!-- ── Styles ────────────────────────────────────────────── -->
+  <style>
+    :root {
+      --brand: #0077cc;
+      --brand-dark: #005fa3;
+      --bg: #e6f2ff;
+    }
+    * {box-sizing: border-box;font-family: "Segoe UI", sans-serif;margin: 0;padding: 0;}
+
+    body {
+      min-height: 100vh;display: flex;flex-direction: column;
+      align-items: center;justify-content: center;background: var(--bg);
+    }
+    /* header bar */
+    header {
+      position: fixed;top: 0;right: 0;left: 0;
+      padding: 20px 40px;background: #fff;box-shadow: 0 2px 4px rgba(0,0,0,.1);
+      text-align: right;
+    }
+    header h1 {color: var(--brand);font-size: 28px;margin-bottom: 4px;}
+    header p  {color: #333;font-size: 14px;}
+
+    /* card */
+    .card {
+      background: #fff;padding: 40px;margin-top: 100px;border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);text-align: center;width: 100%;max-width: 420px;
+    }
+    .card h2 {color: var(--brand);margin-bottom: 24px;}
+
+    input[type="file"] {margin-bottom: 20px;width: 100%;}
+    button {
+      background: var(--brand);color: #fff;border: 0;padding: 10px 24px;
+      font-size: 16px;border-radius: 5px;cursor: pointer;width: 100%;
+      transition: background .15s;
+    }
+    button:hover {background: var(--brand-dark);}
+    .note {margin-top: 22px;font-size: 14px;color: #555;}
+
+    /* status badge */
+    #status {
+      margin-top: 16px;font-size: 14px;font-weight: 600;display: none;
+    }
+    #status.ok    {color: #219653;}   /* green */
+    #status.error {color: #d0312d;}   /* red  */
+  </style>
+</head>
+
+<body>
+  <!-- ── Header ── -->
+  <header>
+    <h1>Lanada SmartTech</h1>
+    <p>SmartDocs: Upload. Extract. Done.</p>
+  </header>
+
+  <!-- ── Upload Card ── -->
+  <main class="card">
+    <h2>Upload your document to SmartDoc AI</h2>
+
+    <!-- Using fetch to avoid page reload and show status inline -->
+    <form id="uploadForm">
+      <input type="file"
+             name="data"
+             accept=".pdf,.doc,.docx,.xls,.xlsx"
+             required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <div id="status"></div>
+
+    <p class="note">AI-powered document processing made easy</p>
+  </main>
+
+  <!-- ── Script ── -->
+  <script>
+    const form   = document.getElementById("uploadForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.style.display = "none";
+
+      const body = new FormData(form);
+
+      try {
+        const res  = await fetch("https://n8n-smarttech.onrender.com/webhook/upload", {
+          method: "POST",
+          body
+        });
+        const json = await res.json();
+
+        if (res.ok && json.status === "received") {
+          status.textContent = "✔ Uploaded!";
+          status.className   = "ok";
+        } else {
+          throw new Error("Unexpected response");
+        }
+      } catch (err) {
+        status.textContent = "Upload failed — try again.";
+        status.className   = "error";
+      }
+      status.style.display = "block";
+      // optional: reset the form so user can pick another file
+      form.reset();
+    });
+  </script>
+</body>
+</html>
+
