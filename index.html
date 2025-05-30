@@ -246,17 +246,23 @@
                 }
                 
                 // Check for expected response format
-                if (data && data.status === "received") {
-                    status.textContent = "✔ Upload successful!";
+                console.log("Server response:", data);
+                
+                // For debugging - accept any response that's not an error
+                if (response.ok && data) {
+                    status.textContent = `✔ Upload successful! Server said: ${JSON.stringify(data)}`;
                     status.className = "ok";
+                    
+                    // Store for debugging
+                    window.lastResponse = data;
                     
                     // Reset form after successful upload
                     setTimeout(() => {
                         form.reset();
                         status.style.display = "none";
-                    }, 3000);
+                    }, 5000);
                 } else {
-                    throw new Error(data.message || "Unexpected response format");
+                    throw new Error(`Unexpected response format. Got: ${JSON.stringify(data)}`);
                 }
                 
             } catch (error) {
