@@ -207,11 +207,19 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
                 
+                // Option 1: Direct request (requires CORS configured on n8n)
                 const response = await fetch("https://n8n-smarttech.onrender.com/webhook/upload", {
                     method: "POST",
                     body: formData,
                     signal: controller.signal
                 });
+                
+                // Option 2: Using a CORS proxy (uncomment if CORS not configured)
+                // const response = await fetch("https://cors-anywhere.herokuapp.com/https://n8n-smarttech.onrender.com/webhook/upload", {
+                //     method: "POST",
+                //     body: formData,
+                //     signal: controller.signal
+                // });
                 
                 clearTimeout(timeoutId);
                 
